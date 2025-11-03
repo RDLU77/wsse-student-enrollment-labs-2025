@@ -32,6 +32,23 @@ paths:
                   status:
                     type: string
                     example: ok
+  
+  /students:
+    get:
+      summary: "List students"
+      tags: [health] # 這裡暫時使用 [health]，但您可以改成 [students]
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Student"
 
 components:
   schemas:
