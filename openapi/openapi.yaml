@@ -36,7 +36,7 @@ paths:
   /students:
     get:
       summary: "List students"
-      tags: [health] # 這裡暫時使用 [health]，但您可以改成 [students]
+      tags: [health]
       responses:
         "200":
           description: "OK"
@@ -49,7 +49,12 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Student"
-
+        "500":
+          description: "Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Student:
@@ -58,3 +63,10 @@ components:
       properties:
         id: { type: integer, format: int64 } # 主鍵
         name: { type: string, minLength: 1 } # 必填名稱
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, example: "ERR_NOT_FOUND" }
+        message: { type: string }
