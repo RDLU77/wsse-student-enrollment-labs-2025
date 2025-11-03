@@ -1,7 +1,6 @@
-name: OpenAPI Validation CI
+name: OpenAPI Minimal CI
 
 on:
-  # 僅在 openapi/ 資料夾下的 .yaml 檔案有異動時才執行
   pull_request:
     paths: ['openapi/**/*.yaml']
   push:
@@ -11,29 +10,11 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      # 1. 取得程式碼
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '18'}
 
-      # 2. 設定 Node.js 環境並啟用快取 (Caching)
-      # 即使是全域安裝，使用快取也能提升性能，但更建議在專案中安裝。
-      - name: ⚙️ Setup Node.js and Cache Dependencies
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          # 啟用 npm 快取，加速後續的 npm i/ci
-          cache: 'npm' 
-          
-      # 3. 安裝 Redocly CLI 
-      # 建議將 CLI 作為開發依賴 (devDependency) 加入 package.json，然後使用 npm ci。
-      # 為了保持 Minimal CI 範例的簡潔性，這裡繼續使用全域安裝 (但已轉換至 Redocly)。
-      - name: 📦 Install Redocly CLI globally (Recommended alternative)
-        run: npm install -g @redocly/cli
-
-      # 4. 執行 OpenAPI 檔案驗證 (Validation/Linting)
-      # Redocly CLI 使用 'lint' 指令進行驗證
-      - name: ✅ Validate OpenAPI Specification with Redocly CLI
-        # 如果 openapi.yaml 存在，它會進行驗證。
-        # 如果檔案不存在，則會出現與您先前相同的「ENOENT」錯誤，
-        # 提醒您 openapi/openapi.yaml 檔案缺失。
-        run: redocly lint openapi/openapi.yaml
+      - name: Validate with swagger-cli
+        run: |
+          npm i -g @apidevtools/swagger-cli@4
+          swagger-cli validate openapi/openapi.yaml
