@@ -15,11 +15,16 @@ servers:
   - url: "https://api.example.edu/api/v1"
     description: "Production"
 
+# VVV 新增 全域安全設定 VVV
+security:
+  - ApiKeyAuth: []
+
 paths:
   /health:
     get:
       summary: "Health check"
       description: "服務是否正常"
+      # VVV 覆蓋全域安全設定，使此端點匿名 VVV
       security: []
       responses:
         '200':
@@ -32,8 +37,53 @@ paths:
                   status:
                     type: string
                     example: ok
+  
+  /students:
+    get:
+      summary: "List students"
+      tags: [health]
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Student"
+        "500":
+          description: "Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+    post:
+      summary: "Create student"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Student" }
+            examples:
+              ok: { value: { id: 101, name: "Ann" } }
+      responses:
+        "201":
+          description: "Created"
+          headers:
+            Location:
+              description: "新資源 URL (例如 /api/v1/students/101)"
+              schema: { type: string }
 
 components:
+  # VVV 在 components 內新增 securitySchemes VVV
+  securitySchemes:
+    ApiKeyAuth: { type: apiKey, in: header, name: X-API-Key }
+  # ^^^ 新增 securitySchemes 結束 ^^^
+  
   schemas:
     Student:
       type: object
@@ -41,3 +91,9 @@ components:
       properties:
         id: { type: integer, format: int64 } # 主鍵
         name: { type: string, minLength: 1 } # 必填名稱
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, example: "ERR_NOT_FOUND" }
+        message: { type: string }
