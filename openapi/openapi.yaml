@@ -19,7 +19,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  status: {
+                  status: 
                     type: string
                     example: ok
-                    }
+                    
