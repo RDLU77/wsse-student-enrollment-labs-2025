@@ -1,0 +1,14 @@
+openapi: "3.0.0" # 固定 3.0，工具相容性高
+info:
+  title: "Student Enrollment API"
+  version: "0.2.0" # 契約版 (與 URL 版本不同)
+servers:
+  - url: "https://api.example.edu/api/v1" # SRU + 版本 (/api/v1)
+paths:
+  /health:
+    get:
+      summary: "Health check"
+      description: "服務是否正常"
+      security: [] # 覆寫：此端點匿名
+      responses:
+        "200": { description: "OK" } # 狀態碼要字串
