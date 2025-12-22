@@ -2,9 +2,7 @@ name: OpenAPI Minimal CI
 
 on:
   pull_request:
-    paths: ['openapi/**/*.yaml']
-  push:
-    branches: [main]
+    paths: ['openapi/**/*.yaml', 'openapi/**/*.yml']
 
 jobs:
   validate:
